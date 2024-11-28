@@ -3,93 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MFI Knitting Flow Real-Time Temperature Dashboard</title>
+    <title>MFI Knitting Flow Real-Time Temperature Dashboard with Connection Monitoring</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #89cff0, #ffcccb);
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
             margin: 0;
             padding: 0;
         }
-
         header {
-            background: linear-gradient(90deg, #007acc, #005f9e);
+            background-color: #007acc;
             color: white;
             text-align: center;
-            padding: 20px 10px;
+            padding: 1em 0;
             position: relative;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-
-        header h1 {
-            margin: 0;
-            font-size: 2em;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        header p {
-            margin: 5px 0 0;
-            font-size: 1em;
-            font-style: italic;
-        }
-
         .container {
             padding: 20px;
-            max-width: 1200px;
+            max-width: 900px;
             margin: 20px auto;
-            background: rgba(255, 255, 255, 0.8);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
         }
-
         .temperature-box {
             border: 1px solid #007acc;
-            border-radius: 10px;
+            border-radius: 8px;
             padding: 10px;
+            font-size: 1.1em;
             text-align: center;
-            font-size: 1em;
-            background: linear-gradient(135deg, #eef, #d7e6f3);
-            color: #333;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
-
-        .temperature-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
-        }
-
         .temperature-box h3 {
-            margin: 0 0 5px;
-            font-size: 1.2em;
-            color: #005f9e;
+            margin: 0 0 10px;
+            font-size: 1em;
         }
-
         .temperature-box .value {
             font-size: 1.2em;
             font-weight: bold;
         }
-
-        /* Temperature Colors */
+        /* Default Background */
+        .temperature-box {
+            background-color: #eef;
+            color: #333;
+        }
+        /* Dynamic Colors */
         .low-temp {
-            background: linear-gradient(135deg, #8a2be2, #6a0dad);
+            background-color: purple;
             color: white;
         }
-
         .mid-temp {
-            background: linear-gradient(135deg, #32cd32, #228b22);
+            background-color: lime;
             color: black;
         }
-
         .high-temp {
-            background: linear-gradient(135deg, #ff4500, #dc143c);
+            background-color: red;
             color: white;
         }
-
-        /* Connection Error Overlay */
+        /* Full-Page Overlay for Connection Error */
         #error-overlay {
             display: none;
             position: fixed;
@@ -104,17 +79,6 @@
             padding-top: 20%;
             z-index: 1000;
         }
-
-        footer {
-            text-align: center;
-            margin: 20px 0;
-            font-size: 1em;
-            color: white;
-            background: linear-gradient(90deg, #005f9e, #007acc);
-            padding: 10px;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
     </style>
 </head>
 <body>
@@ -122,14 +86,12 @@
         <h1>MFI Knitting Flow Real-Time Temperature Dashboard</h1>
         <p>Software Design: Uditha Asiri MFI Engineering</p>
     </header>
-
     <div class="container" id="temperature-container">
-        <!-- Temperature boxes will be added dynamically here -->
+        <!-- Boxes for modules will be dynamically added here -->
     </div>
 
+    <!-- Full-Page Overlay -->
     <div id="error-overlay">Connection Error. Please Check Your Internet Connection.</div>
-
-    <footer>&copy; 2024 MFI Engineering - All Rights Reserved</footer>
 
     <script>
         // Firebase URLs
@@ -140,16 +102,51 @@
         let lastConnectionValue = null;
         let lastUpdateTime = Date.now();
 
-        // Show and hide connection error overlay
-        const showErrorOverlay = () => document.getElementById("error-overlay").style.display = "block";
-        const hideErrorOverlay = () => document.getElementById("error-overlay").style.display = "none";
+        // Function to show the full-page connection error
+        const showErrorOverlay = () => {
+            const overlay = document.getElementById("error-overlay");
+            overlay.style.display = "block";
+        };
+
+        // Function to hide the full-page connection error
+        const hideErrorOverlay = () => {
+            const overlay = document.getElementById("error-overlay");
+            overlay.style.display = "none";
+        };
+
+        // Function to check connection status
+        const checkConnection = async () => {
+            try {
+                const response = await fetch(connectionUrl);
+                if (!response.ok) {
+                    throw new Error("Error fetching connection status");
+                }
+                const connectionValue = await response.json();
+                const currentTime = Date.now();
+
+                if (connectionValue !== lastConnectionValue) {
+                    // Update timestamp if value changes
+                    lastConnectionValue = connectionValue;
+                    lastUpdateTime = currentTime;
+                    hideErrorOverlay();
+                } else if (currentTime - lastUpdateTime > 5000) {
+                    // Show error overlay if no change for 10 seconds
+                    showErrorOverlay();
+                }
+            } catch (error) {
+                console.error("Connection Error: ", error.message);
+                showErrorOverlay();
+            }
+        };
 
         // Fetch temperature data
         const fetchTemperature = async (moduleNumber) => {
             const url = `${baseUrl}Module_${moduleNumber.toString().padStart(2, '0')}_:.json?auth=${authKey}`;
             try {
                 const response = await fetch(url);
-                if (!response.ok) throw new Error(`Module ${moduleNumber} - Error fetching data`);
+                if (!response.ok) {
+                    throw new Error(`Module ${moduleNumber} - Error fetching data`);
+                }
                 const data = await response.json();
                 return data || "N/A";
             } catch (error) {
@@ -186,9 +183,9 @@
             }
         };
 
-        // Update temperatures dynamically
+        // Update temperatures
         const updateTemperatures = async () => {
-            for (let i = 1; i <= 23; i++) {
+            for (let i = 1; i <= 24; i++) {
                 const temperature = await fetchTemperature(i);
                 const box = document.getElementById(`module-${i}`);
                 if (box) {
@@ -199,11 +196,13 @@
             }
         };
 
-        // Initialize and schedule updates
+        // Initialize and update
         window.onload = () => {
             initializeBoxes();
+            checkConnection();
             updateTemperatures();
-            setInterval(updateTemperatures, 2000); // Update temperatures every 2 seconds
+            setInterval(checkConnection, 5000); // Check connection every 10 seconds
+            setInterval(updateTemperatures, 1000); // Update temperatures every 5 seconds
         };
     </script>
 </body>
