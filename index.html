@@ -7,22 +7,24 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f0f8ff;
+            background: linear-gradient(135deg, #89cff0, #ffcccb);
             margin: 0;
             padding: 0;
         }
 
         header {
-            background-color: #007acc;
+            background: linear-gradient(90deg, #007acc, #005f9e);
             color: white;
             text-align: center;
             padding: 20px 10px;
             position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         header h1 {
             margin: 0;
-            font-size: 1.8em;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         header p {
@@ -35,54 +37,55 @@
             padding: 20px;
             max-width: 1200px;
             margin: 20px auto;
-            background: white;
+            background: rgba(255, 255, 255, 0.8);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             border-radius: 10px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Box size adjusted */
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 20px;
         }
 
         .temperature-box {
             border: 1px solid #007acc;
             border-radius: 10px;
-            padding: 10px; /* Padding reduced */
+            padding: 10px;
             text-align: center;
-            font-size: 1em; /* Font size reduced */
-            background-color: #eef;
+            font-size: 1em;
+            background: linear-gradient(135deg, #eef, #d7e6f3);
             color: #333;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .temperature-box:hover {
             transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
         }
 
         .temperature-box h3 {
-            margin: 0 0 5px; /* Margin reduced */
-            font-size: 1em; /* Font size reduced */
-            color: #007acc;
+            margin: 0 0 5px;
+            font-size: 1.2em;
+            color: #005f9e;
         }
 
         .temperature-box .value {
-            font-size: 1.2em; /* Font size reduced */
+            font-size: 1.2em;
             font-weight: bold;
         }
 
         /* Temperature Colors */
         .low-temp {
-            background-color: purple;
+            background: linear-gradient(135deg, #8a2be2, #6a0dad);
             color: white;
         }
 
         .mid-temp {
-            background-color: lime;
+            background: linear-gradient(135deg, #32cd32, #228b22);
             color: black;
         }
 
         .high-temp {
-            background-color: red;
+            background: linear-gradient(135deg, #ff4500, #dc143c);
             color: white;
         }
 
@@ -105,8 +108,12 @@
         footer {
             text-align: center;
             margin: 20px 0;
-            font-size: 0.9em;
-            color: #555;
+            font-size: 1em;
+            color: white;
+            background: linear-gradient(90deg, #005f9e, #007acc);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
