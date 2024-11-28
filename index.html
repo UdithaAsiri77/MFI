@@ -39,16 +39,16 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             border-radius: 10px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Box size adjusted */
             gap: 20px;
         }
 
         .temperature-box {
             border: 1px solid #007acc;
             border-radius: 10px;
-            padding: 15px;
+            padding: 10px; /* Padding reduced */
             text-align: center;
-            font-size: 1.1em;
+            font-size: 1em; /* Font size reduced */
             background-color: #eef;
             color: #333;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -60,13 +60,13 @@
         }
 
         .temperature-box h3 {
-            margin: 0 0 10px;
-            font-size: 1.2em;
+            margin: 0 0 5px; /* Margin reduced */
+            font-size: 1em; /* Font size reduced */
             color: #007acc;
         }
 
         .temperature-box .value {
-            font-size: 1.5em;
+            font-size: 1.2em; /* Font size reduced */
             font-weight: bold;
         }
 
@@ -113,7 +113,7 @@
 <body>
     <header>
         <h1>MFI Knitting Flow Real-Time Temperature Dashboard</h1>
-        <p>Software Design: Uditha Asiri MFI Engineering </p>
+        <p>Software Design: Uditha Asiri MFI Engineering</p>
     </header>
 
     <div class="container" id="temperature-container">
@@ -136,39 +136,6 @@
         // Show and hide connection error overlay
         const showErrorOverlay = () => document.getElementById("error-overlay").style.display = "block";
         const hideErrorOverlay = () => document.getElementById("error-overlay").style.display = "none";
-
-        // Test Firebase Connection
-        const testFirebaseConnection = async () => {
-            try {
-                const response = await fetch(`${baseUrl}test_path.json?auth=${authKey}`);
-                if (!response.ok) throw new Error("Failed to connect to Firebase");
-                const data = await response.json();
-                console.log("Firebase Test Data: ", data); // Only log data to the console for debugging
-            } catch (error) {
-                console.error("Firebase Connection Test Failed: ", error.message);
-            }
-        };
-
-        // Check connection status
-        const checkConnection = async () => {
-            try {
-                const response = await fetch(connectionUrl);
-                if (!response.ok) throw new Error("Error fetching connection status");
-                const connectionValue = await response.json();
-                const currentTime = Date.now();
-
-                if (connectionValue !== lastConnectionValue) {
-                    lastConnectionValue = connectionValue;
-                    lastUpdateTime = currentTime;
-                    hideErrorOverlay();
-                } else if (currentTime - lastUpdateTime > 5000) {
-                    showErrorOverlay();
-                }
-            } catch (error) {
-                console.error("Connection Error:", error.message);
-                showErrorOverlay();
-            }
-        };
 
         // Fetch temperature data
         const fetchTemperature = async (moduleNumber) => {
@@ -227,11 +194,8 @@
 
         // Initialize and schedule updates
         window.onload = () => {
-            testFirebaseConnection();
             initializeBoxes();
-            checkConnection();
             updateTemperatures();
-            setInterval(checkConnection, 5000); // Check connection every 5 seconds
             setInterval(updateTemperatures, 2000); // Update temperatures every 2 seconds
         };
     </script>
