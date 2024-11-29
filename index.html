@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MFI Knitting Flow Real Time Temperature Dashboard</title>
+    <title>MFI Knitting Flow Real Time Temperature</title>
     <style>
         /* General Styles */
         body {
@@ -75,7 +75,7 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
             border-radius: 15px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Smaller boxes */
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Smaller boxes */
             gap: 15px; /* Reduced gap between boxes */
             width: 90%;
             max-width: 1200px;
@@ -84,15 +84,15 @@
         /* Box Styles */
         .temperature-box {
             border: 2px solid rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            padding: 10px; /* Reduced padding */
-            font-size: 0.9em; /* Reduced font size */
+            border-radius: 8px;
+            padding: 2px; /* Reduced padding */
+            font-size: 0.8em; /* Reduced font size */
             text-align: center;
             background-color: rgba(255, 255, 255, 0.9);
             color: #003366;
             font-weight: bold;
             transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.5s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 5px rgba(0, 0, 0, 0.1);
         }
 
         /* Hover Effect */
@@ -159,7 +159,7 @@
 </head>
 <body>
     <header>
-        <h1>MFI Knitting Flow Real Time Temperature Dashboard</h1>
+        <h1>MFI Knitting Flow Real Time Temperature</h1>
         <p>Software Design: Uditha Asiri MFI Engineering</p>
         <div class="status-display">
             <div id="connection-circle" class="status-circle connection-bad"></div>
