@@ -54,11 +54,12 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Auto-fit for all screens */
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Auto-fit for all screens */
             gap: 8px; /* Smaller gap between boxes */
             width: 100%; /* Full width */
             max-width: 1200px; /* Max width for large screens */
-            height: calc(100vh - 180px); /* Adjust to fit entire screen */
+            max-height: calc(100vh - 180px); /* Limit height to fit entire screen */
+            overflow-y: auto; /* Add scrolling if necessary */
         }
 
         /* Box Styles */
@@ -66,7 +67,7 @@
             border: 1px solid #007acc;
             border-radius: 8px;
             padding: 8px; /* Compact padding */
-            font-size: 0.8em; /* Smaller font size */
+            font-size: 0.9em; /* Smaller font size */
             text-align: center;
             background-color: #eef;
             transition: background-color 0.5s ease, transform 0.3s ease;
@@ -108,7 +109,7 @@
         /* Responsive Adjustments */
         @media screen and (max-width: 768px) {
             .container {
-                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); /* Smaller for tabs */
+                grid-template-columns: repeat(3, 1fr); /* 3 boxes per row for tablets */
             }
         }
         @media screen and (max-width: 480px) {
@@ -116,7 +117,7 @@
                 grid-template-columns: repeat(2, 1fr); /* 2 boxes per row for phones */
             }
             .temperature-box {
-                font-size: 0.7em; /* Reduce font size */
+                font-size: 0.8em; /* Reduce font size */
                 padding: 6px; /* Smaller padding */
             }
         }
@@ -237,8 +238,8 @@
         window.onload = () => {
             initializeBoxes();
             checkConnection();
-            setInterval(checkConnection, 500);
-            setInterval(updateTemperatures, 500);
+            setInterval(checkConnection, 3000);
+            setInterval(updateTemperatures, 5000);
         };
     </script>
 </body>
