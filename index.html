@@ -7,20 +7,35 @@
     <style>
         /* ප්‍රධාන Styles */
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff; /* Soft blue background */
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
+
+        /* Header එක */
         header {
-            background-color: #007acc;
+            background-color: #0056b3; /* Deep blue */
             color: white;
             text-align: center;
-            padding: 1em 0;
+            padding: 1.5em 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
         }
+
+        header h1 {
+            font-size: 1.8em;
+            margin: 0;
+        }
+
+        header p {
+            font-size: 1em;
+            margin: 0;
+            font-weight: lighter;
+        }
+
         .status-display {
             margin-top: 10px;
             font-size: 1.2em;
@@ -30,6 +45,7 @@
             justify-content: center;
             gap: 10px;
         }
+
         .status-circle {
             width: 15px;
             height: 15px;
@@ -37,10 +53,12 @@
             background-color: white;
             border: 2px solid #ccc;
         }
+
         .connection-good {
             background-color: lime;
             border: none;
         }
+
         .connection-bad {
             background-color: white;
             border: 2px solid #ccc;
@@ -48,40 +66,48 @@
 
         /* Responsive Container */
         .container {
-            padding: 10px;
-            margin: 0 auto;
+            padding: 20px;
+            margin: 20px auto;
             background: white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Card-like shadow */
+            border-radius: 15px; /* Rounded corners */
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Auto-fit for all screens */
-            gap: 8px; /* Smaller gap between boxes */
-            width: 100%; /* Full width */
-            max-width: 1200px; /* Max width for large screens */
-            max-height: calc(100vh - 180px); /* Limit height to fit entire screen */
-            overflow-y: auto; /* Add scrolling if necessary */
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Auto-fit columns */
+            gap: 20px; /* Space between boxes */
+            width: 90%;
+            max-width: 1200px;
         }
 
         /* Box Styles */
         .temperature-box {
-            border: 1px solid #007acc;
-            border-radius: 8px;
-            padding: 8px; /* Compact padding */
-            font-size: 0.9em; /* Smaller font size */
+            border: 2px solid #007acc; /* Blue border */
+            border-radius: 12px; /* Rounded corners */
+            padding: 15px;
+            font-size: 1em;
             text-align: center;
-            background-color: #eef;
-            transition: background-color 0.5s ease, transform 0.3s ease;
+            background-color: #eef; /* Soft background */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
         }
+
+        /* Hover Effect */
+        .temperature-box:hover {
+            transform: scale(1.05); /* Slightly enlarge */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+        }
+
         .low-temp {
-            background-color: purple;
+            background-color: #6a1b9a; /* Purple */
             color: white;
         }
+
         .mid-temp {
-            background-color: lime;
+            background-color: #c6ff00; /* Bright green */
             color: black;
         }
+
         .high-temp {
-            background-color: red;
+            background-color: #d50000; /* Red */
             color: white;
         }
 
@@ -101,6 +127,7 @@
             z-index: 1000;
             transition: opacity 0.5s ease;
         }
+
         #error-overlay.active {
             display: block;
             opacity: 1;
@@ -109,16 +136,18 @@
         /* Responsive Adjustments */
         @media screen and (max-width: 768px) {
             .container {
-                grid-template-columns: repeat(3, 1fr); /* 3 boxes per row for tablets */
+                grid-template-columns: repeat(3, 1fr); /* 3 columns for tablets */
             }
         }
+
         @media screen and (max-width: 480px) {
             .container {
-                grid-template-columns: repeat(2, 1fr); /* 2 boxes per row for phones */
+                grid-template-columns: repeat(2, 1fr); /* 2 columns for phones */
             }
+
             .temperature-box {
-                font-size: 0.8em; /* Reduce font size */
-                padding: 6px; /* Smaller padding */
+                font-size: 0.9em; /* Smaller font */
+                padding: 10px; /* Compact padding */
             }
         }
     </style>
@@ -146,11 +175,9 @@
         let lastConnectionValue = null;
         let lastUpdateTime = Date.now();
 
-        // Overlay Show/Hide
         const showErrorOverlay = () => errorOverlay.classList.add("active");
         const hideErrorOverlay = () => errorOverlay.classList.remove("active");
 
-        // Update Connection Circle
         const updateConnectionCircle = (isConnected) => {
             if (isConnected) {
                 connectionCircle.classList.remove("connection-bad");
@@ -161,7 +188,6 @@
             }
         };
 
-        // Check Connection
         const checkConnection = async () => {
             try {
                 const response = await fetch(connectionUrl);
@@ -187,7 +213,6 @@
             }
         };
 
-        // Initialize Temperature Boxes
         const initializeBoxes = () => {
             for (let i = 1; i <= 23; i++) {
                 const box = document.createElement("div");
@@ -201,7 +226,6 @@
             }
         };
 
-        // Update Box Color
         const updateBoxColor = (box, temperature) => {
             box.classList.remove("low-temp", "mid-temp", "high-temp");
             if (temperature <= 23.4) {
@@ -213,7 +237,6 @@
             }
         };
 
-        // Update Temperatures
         const updateTemperatures = async () => {
             for (let i = 1; i <= 23; i++) {
                 const url = `${baseUrl}Module_${i.toString().padStart(2, '0')}_:.json?auth=${authKey}`;
@@ -234,7 +257,6 @@
             }
         };
 
-        // Initial Load
         window.onload = () => {
             initializeBoxes();
             checkConnection();
