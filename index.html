@@ -14,7 +14,7 @@
             flex-direction: column;
             min-height: 100vh;
             overflow-x: hidden; /* Allow vertical scrolling, prevent horizontal overflow */
-            background: #003366; /* Light blue background */
+            background: #003366;
         }
 
         /* Header */
@@ -75,8 +75,8 @@
             box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
             border-radius: 15px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Smaller boxes */
-            gap: 7px; /* Reduced gap between boxes */
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 7px;
             width: 90%;
             max-width: 1200px;
         }
@@ -85,8 +85,8 @@
         .temperature-box {
             border: 3px solid rgba(0, 0, 0, 0.3);
             border-radius: 8px;
-            padding: 2px; /* Reduced padding */
-            font-size: 0.8em; /* Reduced font size */
+            padding: 2px;
+            font-size: 0.8em;
             text-align: center;
             background-color: rgba(255, 255, 255, 0.9);
             color: #003366;
@@ -95,10 +95,10 @@
             box-shadow: 0 4px 5px rgba(0, 0, 0, 0.1);
         }
 
-        /* Hover Effect */
-        .temperature-box:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        /* Pop-Up Effect */
+        .temperature-box.pop-up {
+            transform: scale(1.2); /* Slight enlargement */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
         }
 
         .low-temp {
@@ -117,7 +117,7 @@
         }
 
         .value {
-            font-size: 1.3em; /* Slightly smaller text */
+            font-size: 1.3em;
             margin-top: 5px;
             animation: fadeIn 0.5s ease-in-out;
         }
@@ -172,51 +172,7 @@
     <script>
         const baseUrl = "https://knitting-flow-temperature-live-default-rtdb.asia-southeast1.firebasedatabase.app/";
         const authKey = "vqjdaadmQXfVoZ7YoxuDvlRsCLgbNeGjIJIfzXVM";
-        const connectionUrl = `${baseUrl}connection:.json?auth=${authKey}`;
         const temperatureContainer = document.getElementById("temperature-container");
-        const connectionCircle = document.getElementById("connection-circle");
-        const errorOverlay = document.getElementById("error-overlay");
-
-        let lastConnectionValue = null;
-        let lastUpdateTime = Date.now();
-
-        const showErrorOverlay = () => errorOverlay.classList.add("active");
-        const hideErrorOverlay = () => errorOverlay.classList.remove("active");
-
-        const updateConnectionCircle = (isConnected) => {
-            if (isConnected) {
-                connectionCircle.classList.remove("connection-bad");
-                connectionCircle.classList.add("connection-good");
-            } else {
-                connectionCircle.classList.remove("connection-good");
-                connectionCircle.classList.add("connection-bad");
-            }
-        };
-
-        const checkConnection = async () => {
-            try {
-                const response = await fetch(connectionUrl);
-                if (!response.ok) throw new Error("Error fetching connection status");
-
-                const connectionValue = await response.json();
-                const currentTime = Date.now();
-
-                updateConnectionCircle(connectionValue === 1);
-
-                if (connectionValue !== lastConnectionValue) {
-                    lastConnectionValue = connectionValue;
-                    lastUpdateTime = currentTime;
-                    hideErrorOverlay();
-                } else if (currentTime - lastUpdateTime > 5000) {
-                    showErrorOverlay();
-                    updateConnectionCircle(false);
-                }
-            } catch (error) {
-                console.error("Connection Error: ", error.message);
-                showErrorOverlay();
-                updateConnectionCircle(false);
-            }
-        };
 
         const initializeBoxes = () => {
             for (let i = 1; i <= 23; i++) {
@@ -253,6 +209,13 @@
                     const box = document.getElementById(`module-${i}`);
                     if (box) {
                         const valueElement = box.querySelector(".value");
+
+                        // Trigger pop-up effect if the temperature changes
+                        if (valueElement.textContent !== `${data || "N/A"} °C`) {
+                            box.classList.add("pop-up");
+                            setTimeout(() => box.classList.remove("pop-up"), 300); // Reset after 300ms
+                        }
+
                         valueElement.textContent = `${data || "N/A"} °C`;
                         updateBoxColor(box, parseFloat(data));
                     }
@@ -264,9 +227,7 @@
 
         window.onload = () => {
             initializeBoxes();
-            checkConnection();
-            setInterval(checkConnection, 500);
-            setInterval(updateTemperatures, 3000);
+            setInterval(updateTemperatures, 1000);
         };
     </script>
 </body>
