@@ -14,7 +14,7 @@
             flex-direction: column;
             min-height: 100vh;
             overflow-x: hidden; /* Allow vertical scrolling, prevent horizontal overflow */
-            background: #003366;
+            background: #003366; /* Light blue background */
         }
 
         /* Header */
@@ -75,8 +75,8 @@
             box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
             border-radius: 15px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            gap: 7px;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Smaller boxes */
+            gap: 7px; /* Reduced gap between boxes */
             width: 90%;
             max-width: 1200px;
         }
@@ -85,8 +85,8 @@
         .temperature-box {
             border: 3px solid rgba(0, 0, 0, 0.3);
             border-radius: 8px;
-            padding: 2px;
-            font-size: 0.8em;
+            padding: 2px; /* Reduced padding */
+            font-size: 0.8em; /* Reduced font size */
             text-align: center;
             background-color: rgba(255, 255, 255, 0.9);
             color: #003366;
@@ -95,10 +95,10 @@
             box-shadow: 0 4px 5px rgba(0, 0, 0, 0.1);
         }
 
-        /* Pop-Up Effect */
-        .temperature-box.pop-up {
-            transform: scale(1.2); /* Slight enlargement */
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        /* Hover Effect */
+        .temperature-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
 
         .low-temp {
@@ -117,9 +117,26 @@
         }
 
         .value {
-            font-size: 1.3em;
+            font-size: 1.3em; /* Slightly smaller text */
             margin-top: 5px;
             animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Popup Animation */
+        .popup {
+            animation: popupEffect 0.6s ease-in-out;
+        }
+
+        @keyframes popupEffect {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
         }
 
         /* Animation */
@@ -172,17 +189,60 @@
     <script>
         const baseUrl = "https://knitting-flow-temperature-live-default-rtdb.asia-southeast1.firebasedatabase.app/";
         const authKey = "vqjdaadmQXfVoZ7YoxuDvlRsCLgbNeGjIJIfzXVM";
+        const connectionUrl = `${baseUrl}connection:.json?auth=${authKey}`;
         const temperatureContainer = document.getElementById("temperature-container");
+        const connectionCircle = document.getElementById("connection-circle");
+        const errorOverlay = document.getElementById("error-overlay");
+
+        let lastConnectionValue = null;
+        let lastUpdateTime = Date.now();
+
+        const showErrorOverlay = () => errorOverlay.classList.add("active");
+        const hideErrorOverlay = () => errorOverlay.classList.remove("active");
+
+        const updateConnectionCircle = (isConnected) => {
+            if (isConnected) {
+                connectionCircle.classList.remove("connection-bad");
+                connectionCircle.classList.add("connection-good");
+            } else {
+                connectionCircle.classList.remove("connection-good");
+                connectionCircle.classList.add("connection-bad");
+            }
+        };
+
+        const checkConnection = async () => {
+            try {
+                const response = await fetch(connectionUrl);
+                if (!response.ok) throw new Error("Error fetching connection status");
+
+                const connectionValue = await response.json();
+                const currentTime = Date.now();
+
+                updateConnectionCircle(connectionValue === 1);
+
+                if (connectionValue !== lastConnectionValue) {
+                    lastConnectionValue = connectionValue;
+                    lastUpdateTime = currentTime;
+                    hideErrorOverlay();
+                } else if (currentTime - lastUpdateTime > 5000) {
+                    showErrorOverlay();
+                    updateConnectionCircle(false);
+                }
+            } catch (error) {
+                console.error("Connection Error: ", error.message);
+                showErrorOverlay();
+                updateConnectionCircle(false);
+            }
+        };
 
         const initializeBoxes = () => {
             for (let i = 1; i <= 23; i++) {
                 const box = document.createElement("div");
                 box.id = `module-${i}`;
                 box.className = "temperature-box";
-                box.innerHTML = `
-                    <h3>Module ${i.toString().padStart(2, '0')}</h3>
-                    <div class="value">Loading...</div>
-                `;
+                box.innerHTML = 
+                    `<h3>Module ${i.toString().padStart(2, '0')}</h3>
+                    <div class="value">Loading...</div>`;
                 temperatureContainer.appendChild(box);
             }
         };
@@ -209,15 +269,18 @@
                     const box = document.getElementById(`module-${i}`);
                     if (box) {
                         const valueElement = box.querySelector(".value");
+                        const previousValue = parseFloat(valueElement.textContent) || null;
+                        const newValue = parseFloat(data);
 
-                        // Trigger pop-up effect if the temperature changes
-                        if (valueElement.textContent !== `${data || "N/A"} °C`) {
-                            box.classList.add("pop-up");
-                            setTimeout(() => box.classList.remove("pop-up"), 300); // Reset after 300ms
+                        if (previousValue !== newValue) {
+                            valueElement.textContent = `${data || "N/A"} °C`;
+                            updateBoxColor(box, newValue);
+                            // Add popup effect
+                            box.classList.add("popup");
+                            setTimeout(() => {
+                                box.classList.remove("popup");
+                            }, 600); // Match animation duration
                         }
-
-                        valueElement.textContent = `${data || "N/A"} °C`;
-                        updateBoxColor(box, parseFloat(data));
                     }
                 } catch (error) {
                     console.error(`Error fetching Module ${i}: ${error.message}`);
@@ -227,7 +290,9 @@
 
         window.onload = () => {
             initializeBoxes();
-            setInterval(updateTemperatures, 1000);
+            checkConnection();
+            setInterval(checkConnection, 500);
+            setInterval(updateTemperatures, 3000);
         };
     </script>
 </body>
