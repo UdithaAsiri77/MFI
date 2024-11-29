@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MFI Knitting Flow Real-Time Temperature Dashboard</title>
     <style>
-        /* General Styles */
+        /* ප්‍රධාන Styles */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f8ff;
@@ -14,7 +14,6 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            overflow: hidden; /* Prevent scrolling */
         }
         header {
             background-color: #007acc;
@@ -47,7 +46,7 @@
             border: 2px solid #ccc;
         }
 
-        /* Container to Fit All Boxes */
+        /* Responsive Container */
         .container {
             padding: 10px;
             margin: 0 auto;
@@ -55,19 +54,19 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Shrinks boxes */
-            gap: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Auto-fit for all screens */
+            gap: 8px; /* Smaller gap between boxes */
             width: 100%; /* Full width */
-            max-height: calc(100vh - 180px); /* Limit height to fit all boxes */
-            overflow-y: auto; /* Add vertical scrolling if needed */
+            max-width: 1200px; /* Max width for large screens */
+            height: calc(100vh - 180px); /* Adjust to fit entire screen */
         }
 
-        /* Temperature Box Styles */
+        /* Box Styles */
         .temperature-box {
             border: 1px solid #007acc;
             border-radius: 8px;
             padding: 8px; /* Compact padding */
-            font-size: 0.9em; /* Smaller font size */
+            font-size: 0.8em; /* Smaller font size */
             text-align: center;
             background-color: #eef;
             transition: background-color 0.5s ease, transform 0.3s ease;
@@ -85,6 +84,7 @@
             color: white;
         }
 
+        /* Overlay */
         #error-overlay {
             display: none;
             position: fixed;
@@ -108,16 +108,16 @@
         /* Responsive Adjustments */
         @media screen and (max-width: 768px) {
             .container {
-                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Adjust for smaller screens */
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); /* Smaller for tabs */
             }
         }
         @media screen and (max-width: 480px) {
             .container {
-                grid-template-columns: repeat(1, 1fr); /* Single column for phones */
+                grid-template-columns: repeat(2, 1fr); /* 2 boxes per row for phones */
             }
             .temperature-box {
-                font-size: 0.8em;
-                padding: 6px;
+                font-size: 0.7em; /* Reduce font size */
+                padding: 6px; /* Smaller padding */
             }
         }
     </style>
@@ -237,8 +237,8 @@
         window.onload = () => {
             initializeBoxes();
             checkConnection();
-            setInterval(checkConnection, 3000);
-            setInterval(updateTemperatures, 5000);
+            setInterval(checkConnection, 500);
+            setInterval(updateTemperatures, 500);
         };
     </script>
 </body>
