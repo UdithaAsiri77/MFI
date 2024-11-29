@@ -14,6 +14,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            overflow: hidden; /* Prevent scrolling */
         }
         header {
             background-color: #007acc;
@@ -46,7 +47,7 @@
             border: 2px solid #ccc;
         }
 
-        /* Responsive Grid Layout */
+        /* Container to Fit All Boxes */
         .container {
             padding: 10px;
             margin: 0 auto;
@@ -54,17 +55,18 @@
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Smaller boxes */
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Shrinks boxes */
             gap: 10px;
-            width: 100%;
-            max-width: 1200px;
+            width: 100%; /* Full width */
+            max-height: calc(100vh - 180px); /* Limit height to fit all boxes */
+            overflow-y: auto; /* Add vertical scrolling if needed */
         }
 
         /* Temperature Box Styles */
         .temperature-box {
             border: 1px solid #007acc;
             border-radius: 8px;
-            padding: 8px; /* Reduce padding */
+            padding: 8px; /* Compact padding */
             font-size: 0.9em; /* Smaller font size */
             text-align: center;
             background-color: #eef;
@@ -103,10 +105,10 @@
             opacity: 1;
         }
 
-        /* Mobile-Specific Adjustments */
+        /* Responsive Adjustments */
         @media screen and (max-width: 768px) {
             .container {
-                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Adjust for tablets */
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); /* Adjust for smaller screens */
             }
         }
         @media screen and (max-width: 480px) {
@@ -114,8 +116,8 @@
                 grid-template-columns: repeat(1, 1fr); /* Single column for phones */
             }
             .temperature-box {
-                font-size: 0.8em; /* Adjust font size */
-                padding: 6px; /* Reduce padding further */
+                font-size: 0.8em;
+                padding: 6px;
             }
         }
     </style>
@@ -235,8 +237,8 @@
         window.onload = () => {
             initializeBoxes();
             checkConnection();
-            setInterval(checkConnection, 500);
-            setInterval(updateTemperatures, 500);
+            setInterval(checkConnection, 3000);
+            setInterval(updateTemperatures, 5000);
         };
     </script>
 </body>
