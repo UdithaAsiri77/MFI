@@ -3,26 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MFI Knitting Flow Real-Time Temperature Dashboard</title>
+    <title>MFI Knitting Flow Real Time Temperature Dashboard</title>
     <style>
         /* General Styles */
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #eaf2f8; /* Softer light blue */
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Animated Gradient Background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #003366, #6e2dd6, #2ee809, #d61139);
+            background-size: 300% 300%;
+            animation: gradientBackground 15s infinite;
+            z-index: -1;
+        }
+
+        @keyframes gradientBackground {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         /* Header */
         header {
-            background-color: #003366; /* Deep navy blue */
-            color: #f4f4f4; /* Off-white for better contrast */
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #f4f4f4;
             text-align: center;
             padding: 1.5em 0;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow effect */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         header h1 {
@@ -35,13 +61,13 @@
             font-size: 1.1em;
             font-weight: lighter;
             margin: 0;
-            color: #a2d9ff; /* Subtle blue tint for a softer effect */
+            color: #a2d9ff;
         }
 
         .status-display {
             margin-top: 10px;
             font-size: 1.2em;
-            color: #59e03a; /* Soft green for Live text */
+            color: #59e03a;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -57,7 +83,7 @@
         }
 
         .connection-good {
-            background-color: #00ff00; /* Bright green for success */
+            background-color: #00ff00;
             border: none;
         }
 
@@ -70,49 +96,67 @@
         .container {
             padding: 20px;
             margin: 20px auto;
-            background: white;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Card-like shadow */
-            border-radius: 15px; /* Rounded corners */
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Auto-fit columns */
-            gap: 20px; /* Space between boxes */
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 20px;
             width: 90%;
             max-width: 1200px;
         }
 
         /* Box Styles */
         .temperature-box {
-            border: 2px solid #0056b3; /* Blue border */
-            border-radius: 12px; /* Rounded corners */
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
             padding: 15px;
             font-size: 1.1em;
             text-align: center;
-            background-color: #eef; /* Soft background */
-            color: #003366; /* Dark blue for text */
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #003366;
             font-weight: bold;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.5s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         /* Hover Effect */
         .temperature-box:hover {
-            transform: scale(1.05); /* Slightly enlarge */
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
         }
 
         .low-temp {
-            background-color: #6e2dd6; /* purple */
+            background-color: #6e2dd6;
             color: white;
         }
 
         .mid-temp {
-            background-color: #2ee809; /* green */
+            background-color: #2ee809;
             color: black;
         }
 
         .high-temp {
-            background-color: #d61139; /* red */
+            background-color: #d61139;
             color: white;
+        }
+
+        .value {
+            font-size: 1.5em;
+            margin-top: 5px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         /* Overlay */
@@ -124,7 +168,7 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.8);
-            color: #ffcccb; /* Light red for error */
+            color: #ffcccb;
             font-size: 2em;
             text-align: center;
             padding-top: 20%;
@@ -140,25 +184,25 @@
         /* Responsive Adjustments */
         @media screen and (max-width: 768px) {
             .container {
-                grid-template-columns: repeat(3, 1fr); /* 3 columns for tablets */
+                grid-template-columns: repeat(3, 1fr);
             }
         }
 
         @media screen and (max-width: 480px) {
             .container {
-                grid-template-columns: repeat(2, 1fr); /* 2 columns for phones */
+                grid-template-columns: repeat(2, 1fr);
             }
 
             .temperature-box {
-                font-size: 0.9em; /* Smaller font */
-                padding: 10px; /* Compact padding */
+                font-size: 0.9em;
+                padding: 10px;
             }
         }
     </style>
 </head>
 <body>
     <header>
-        <h1>MFI Knitting Flow Real-Time Temperature Dashboard</h1>
+        <h1>MFI Knitting Flow Real Time Temperature Dashboard</h1>
         <p>Software Design: Uditha Asiri MFI Engineering</p>
         <div class="status-display">
             <div id="connection-circle" class="status-circle connection-bad"></div>
